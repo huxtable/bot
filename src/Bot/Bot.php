@@ -22,42 +22,29 @@ class Bot
 	}
 
 	/**
-	 * @return	void
+	 * @return	Bot\Twitter
 	 */
 	protected function getTwitterObject()
 	{
-		if( !is_null( $this->twitter ) )
+		if( $this->twitter instanceof Twitter )
 		{
 			return $this->twitter;
 		}
 
-		$environmentVars[Twitter::TOKEN] 			= "{$this->prefix}_TWITTER_TOKEN";
-		$environmentVars[Twitter::TOKEN_SECRET]		= "{$this->prefix}_TWITTER_TOKEN_SECRET";
-		$environmentVars[Twitter::CONSUMER_KEY]		= "{$this->prefix}_TWITTER_CONSUMER_KEY";
-		$environmentVars[Twitter::CONSUMER_SECRET]	= "{$this->prefix}_TWITTER_CONSUMER_SECRET";
+		$envTwitter = getenv( "{$this->prefix}_TWITTER" );
+		$credentialsPieces = explode( ',', $envTwitter );
 
-		$twitterCredentials['token'] 			= getenv( $environmentVars[Twitter::TOKEN] );
-		$twitterCredentials['tokenSecret'] 		= getenv( $environmentVars[Twitter::TOKEN_SECRET] );
-		$twitterCredentials['consumerKey'] 		= getenv( $environmentVars[Twitter::CONSUMER_KEY] );
-		$twitterCredentials['consumerSecret']	= getenv( $environmentVars[Twitter::CONSUMER_SECRET] );
+		if( count( $credentialsPieces ) != 4 )
+		{
+			throw new \Exception( "Missing environment variable '{$this->prefix}_TWITTER'" );
+		}
 
-		// If any of the credentials values are empty, Twitter will throw an exception
-		try
-		{
-			$this->twitter = new Twitter( $twitterCredentials );
-		}
-		// Missing a required field
-		catch( \InvalidArgumentException $e )
-		{
-			print_r( $e );
-			exit;
-		}
-		// Invalid credential value detected
-		catch( \Exception $e )
-		{
-			$invalidEnvironmentVar = $environmentVars[$e->getCode()];
-			throw new \Exception( "Set environment variable '{$invalidEnvironmentVar}'." );
-		}
+		$credentials['consumerKey'] 	= $credentialsPieces[0];
+		$credentials['consumerSecret']	= $credentialsPieces[1];
+		$credentials['token'] 			= $credentialsPieces[2];
+		$credentials['tokenSecret'] 	= $credentialsPieces[3];
+
+		$this->twitter = new Twitter( $credentials );
 
 		return $this->twitter;
 	}

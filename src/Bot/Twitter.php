@@ -9,11 +9,6 @@ use Abraham\TwitterOAuth\TwitterOAuth;
 
 class Twitter
 {
-	const TOKEN = 0;
-	const TOKEN_SECRET = 1;
-	const CONSUMER_KEY = 2;
-	const CONSUMER_SECRET = 4;
-
 	/**
 	 * @var	Abraham\TwitterOAuth\TwitterOAuth
 	 */
@@ -25,23 +20,12 @@ class Twitter
 	 */
 	public function __construct( array $credentials )
 	{
-		$errorCodes['token'] = self::TOKEN;
-		$errorCodes['tokenSecret'] = self::TOKEN_SECRET;
-		$errorCodes['consumerKey'] = self::CONSUMER_KEY;
-		$errorCodes['consumerSecret'] = self::CONSUMER_SECRET;
-
-		$requiredKeys = ['token','tokenSecret','consumerKey','consumerSecret'];
-
+		$requiredKeys = ['consumerKey','consumerSecret','token','tokenSecret'];
 		foreach( $requiredKeys as $requiredKey )
 		{
 			if( !isset( $credentials[$requiredKey] ) )
 			{
-				throw new \InvalidArgumentException( "Missing required argument '{$requiredKey}'." );
-			}
-
-			if( $credentials[$requiredKey] === false )
-			{
-				throw new \Exception( "Invalid '{$requiredKey}' value", $errorCodes[$requiredKey] );
+				throw new \InvalidArgumentException( "Missing required Twitter credentials key '{$requiredKey}'." );
 			}
 		}
 
