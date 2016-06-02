@@ -64,17 +64,6 @@ class Bot
 
 	/**
 	 * @param	string	$message
-	 * @param	string	$channel
-	 * @return	void
-	 */
-	public function postMessageToSlack( $message, $channel='' )
-	{
-		$slack = $this->getSlackObject();
-		$slack->post
-	}
-
-	/**
-	 * @param	string	$message
 	 * @return	void
 	 */
 	public function postMessageToTwitter( $message )
