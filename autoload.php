@@ -5,14 +5,14 @@
  */
 namespace Huxtable\Bot;
 
-$pathBase	= __DIR__;
-$pathSrc	= $pathBase . '/src/Bot';
-$pathVendor	= $pathBase . '/vendor';
+$pathBaseBot	= __DIR__;
+$pathSrcBot		= $pathBaseBot . '/src/Bot';
+$pathVendorBot	= $pathBaseBot . '/vendor';
 
 /*
  * Initialize autoloading
  */
-include_once( $pathSrc . '/Autoloader.php' );
+include_once( $pathSrcBot . '/Autoloader.php' );
 Autoloader::register();
 
-include_once( $pathVendor . '/twitteroauth/autoload.php' );
+include_once( $pathVendorBot . '/twitteroauth/autoload.php' );
