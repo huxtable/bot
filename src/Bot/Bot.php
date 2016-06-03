@@ -21,6 +21,8 @@ class Bot
 	 * @var	string
 	 */
 	protected $prefix;
+
+	/**
 	 * @var	Bot\Twitter\Twitter
 	 */
 	protected $twitter;
@@ -59,6 +61,7 @@ class Bot
 		return $this->flickr;
 	}
 
+	/**
 	 * @return	Bot\Twitter
 	 */
 	protected function getTwitterObject()
