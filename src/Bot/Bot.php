@@ -8,7 +8,12 @@ namespace Huxtable\Bot;
 class Bot
 {
 	/**
-	 * @var	Bot\Twitter
+	 * @var	Bot\Flickr\Flickr
+	 */
+	protected $flickr;
+
+	/**
+	 * @var	Bot\Twitter\Twitter
 	 */
 	protected $twitter;
 
@@ -22,6 +27,28 @@ class Bot
 	}
 
 	/**
+	 * @return	Bot\Flickr\Flickr
+	 */
+	public function getFlickrObject()
+	{
+		if( $this->flickr instanceof Flickr\Flickr )
+		{
+			return $this->flickr;
+		}
+
+		$varName = "{$this->prefix}_FLICKR";
+		$flickrToken = getenv( $varName );
+
+		if( $flickrToken === false )
+		{
+			throw new \Exception( "Missing environment variable '{$varName}'" );
+		}
+
+		$this->flickr = new Flickr\Flickr( $flickrToken );
+
+		return $this->flickr;
+	}
+
 	 * @return	Bot\Twitter
 	 */
 	protected function getTwitterObject()
