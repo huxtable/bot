@@ -13,16 +13,26 @@ class Bot
 	protected $flickr;
 
 	/**
+	 * @var	string
+	 */
+	protected $name;
+
+	/**
+	 * @var	string
+	 */
+	protected $prefix;
 	 * @var	Bot\Twitter\Twitter
 	 */
 	protected $twitter;
 
 	/**
+	 * @param	string	$name		Bot name
 	 * @param	string	$prefix		Bot prefix (ex., for environment variables)
 	 * @return	void
 	 */
-	public function __construct( $prefix )
+	public function __construct( $name, $prefix )
 	{
+		$this->name = $name;
 		$this->prefix = $prefix;
 	}
 
