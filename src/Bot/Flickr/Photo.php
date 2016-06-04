@@ -12,6 +12,11 @@ use Huxtable\Core\HTTP;
 class Photo
 {
 	/**
+	 * @var	array
+	 */
+	protected $exif;
+
+	/**
 	 * @var	boolean
 	 */
 	protected $hasPeople;
@@ -105,6 +110,55 @@ class Photo
 	}
 
 	/**
+	 * @return	string
+	 */
+	public function getCamera()
+	{
+		if( is_null( $this->exif ) )
+		{
+			$this->getExifData();
+		}
+
+		return $this->exif['camera'];
+	}
+
+	/**
+	 * @return	void
+	 */
+	protected function getExifData()
+	{
+		$http = new HTTP;
+		$request = $this->getRequest();
+
+		$request->addParameter( 'method',	'flickr.photos.getExif' );
+		$request->addParameter( 'photo_id',	$this->id );
+
+		$httpResponse = $http->get( $request );
+		$httpResponseBody = unserialize( $httpResponse->getBody() );
+
+		// Default values
+		$this->exif['camera'] = null;
+		$this->exif['tags'] = [];
+
+		if( isset( $httpResponseBody['photo'] ) )
+		{
+			$this->exif['camera'] = $httpResponseBody['photo']['camera'];
+			$this->exif['tags'] = $httpResponseBody['photo']['exif'];
+		}
+	}
+
+	/**
+	 * @return	array
+	 */
+	public function getExifTags()
+	{
+		if( is_null( $this->exif ) )
+		{
+			$this->getExifData();
+		}
+
+		return $this->exif['exif'];
+	}
 
 	/**
 	 * @return	int
@@ -126,6 +180,7 @@ class Photo
 		return $photoInfo['total'];
 	}
 
+	/**
 	 * @return	int
 	 */
 	public function getHeight()
