@@ -32,10 +32,11 @@ class Bot
 	 * @param	string	$prefix		Bot prefix (ex., for environment variables)
 	 * @return	void
 	 */
-	public function __construct( $name, $prefix )
+	public function __construct( $name, $prefix, History $history )
 	{
 		$this->name = $name;
 		$this->prefix = $prefix;
+		$this->history = $history;
 	}
 
 	/**
@@ -57,6 +58,7 @@ class Bot
 		}
 
 		$this->flickr = new Flickr\Flickr( $flickrToken );
+		$this->flickr = new Flickr\Flickr( $flickrToken, $this->history );
 
 		return $this->flickr;
 	}

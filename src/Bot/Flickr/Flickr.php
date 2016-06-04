@@ -5,6 +5,7 @@
  */
 namespace Huxtable\Bot\Flickr;
 
+use Huxtable\Bot;
 use Huxtable\Core\HTTP;
 
 class Flickr
@@ -15,17 +16,24 @@ class Flickr
 	protected $apiKey;
 
 	/**
+	 * @var	Huxtable\Bot\History
+	 */
+	protected $history;
+
+	/**
 	 * @var	Huxtable\Core\HTTP\Request
 	 */
 	protected $request;
 
 	/**
-	 * @param	string	$apiKey
+	 * @param	string			$apiKey
+	 * @param	Bot\History		$history
 	 * @return	void
 	 */
-	public function __construct( $apiKey )
+	public function __construct( $apiKey, Bot\History $history )
 	{
 		$this->apiKey = $apiKey;
+		$this->history = $history;
 	}
 
 	/**
@@ -70,17 +78,17 @@ class Flickr
 			/*
 			 * Skip photos that are already in History
 			 */
-			// if( $this->history->domainEntryExists( 'photo_id', $photo->getId() ) )
+			if( $this->history->domainEntryExists( 'photo_id', $photo->getId() ) )
 			{
-				// continue;
+				continue;
 			}
 
 			/*
 			 * Skip muted owners
 			 */
-			// if( $this->history->domainEntryExists( 'owner_id', $photo->getOwnerId() ) )
+			if( $this->history->domainEntryExists( 'owner_id', $photo->getOwnerId() ) )
 			{
-				// continue;
+				continue;
 			}
 
 			/*
@@ -132,12 +140,12 @@ class Flickr
 		while( true );
 
 		// Update History
-		// $this->history->addDomainEntry( 'photo_id', $photo->getId() );
+		$this->history->addDomainEntry( 'photo_id', $photo->getId() );
 		if( $muteOwner )
 		{
-			// $this->history->addDomainEntry( 'owner_id',	$photo->getOwnerId() );
+			$this->history->addDomainEntry( 'owner_id',	$photo->getOwnerId() );
 		}
-		// $this->history->write();
+		$this->history->write();
 		return $photo;
 	}
 
