@@ -78,18 +78,27 @@ class Flickr
 					throw new \UnderflowException( 'Search results are exhausted' );
 				}
 
-				echo ">> Page {$searchPage}" . PHP_EOL;
 				$searchResults = $this->searchPhotosByTags( $includeTags, $excludeTagsQuery, $searchPage );
 			}
 
 			$skip = false;
 
 			/*
+			 * Skip skipped photos
+			 */
+			if( $this->history->domainEntryExists( 'photo_skipped', $photo->getId() ) )
+			{
+				$this->history->addDomainEntry( 'photo_skipped', $photo->getId() );
+				$this->output->log( 'Flickr: Photo was previously skipped' );
+				continue;
+			}
+
+			/*
 			 * Skip photos that are already in History
 			 */
 			if( $this->history->domainEntryExists( 'photo_id', $photo->getId() ) )
 			{
-				$this->output->log( 'Flickr: Photo already in history' );
+				$this->output->log( 'Skipping: Photo already in history' );
 				continue;
 			}
 
@@ -98,7 +107,7 @@ class Flickr
 			 */
 			if( $this->history->domainEntryExists( 'owner_id', $photo->getOwnerId() ) )
 			{
-				$this->output->log( 'Flickr: Owner is muted' );
+				$this->output->log( 'Skipping: Owner is muted' );
 				continue;
 			}
 
@@ -107,7 +116,8 @@ class Flickr
 			 */
 			if( $photo->hasPeople() )
 			{
-				$this->output->log( 'Flickr: Photo has people' );
+				$this->history->addDomainEntry( 'photo_skipped', $photo->getId() );
+				$this->output->log( 'Skipping: Photo has people' );
 				continue;
 			}
 
@@ -116,7 +126,8 @@ class Flickr
 			 */
 			if( !$photo->isLandscape() )
 			{
-				$this->output->log( 'Flickr: Photo is portrait' );
+				$this->history->addDomainEntry( 'photo_skipped', $photo->getId() );
+				$this->output->log( 'Skipping: Photo is portrait' );
 				continue;
 			}
 
@@ -125,20 +136,23 @@ class Flickr
 			 */
 			if( $photo->isPanorama() )
 			{
-				$this->output->log( 'Flickr: Photo is panorama' );
+				$this->history->addDomainEntry( 'photo_skipped', $photo->getId() );
+				$this->output->log( 'Skipping: Photo is panorama' );
 				continue;
 			}
 
 			$photoTags = $photo->getTags();
 
 			/*
-			 * Skip photos with too many tags`
+			 * Skip photos with too many tags
 			 */
-			if( ($tagCount = count( $photoTags )) > 60 )
+			if( ($tagCount = count( $photoTags )) > 63 )
 			{
-				$this->output->log( "Flickr: Too many tags ($tagCount)" );
+				$this->history->addDomainEntry( 'photo_skipped', $photo->getId() );
+				$this->output->log( "Skipping: Too many tags ($tagCount)" );
 				continue;
 			}
+			$this->output->log( "Flickr: {$tagCount} tags" );
 
 			/*
 			 * Skip photos with any tags found in our batch of remainder exclude tags
@@ -147,7 +161,8 @@ class Flickr
 			{
 				if( in_array( $excludeTag, $photoTags ) )
 				{
-					$this->output->log( "Flickr: Found excluded tag '{$excludeTag}'" );
+					$this->history->addDomainEntry( 'photo_skipped', $photo->getId() );
+					$this->output->log( "Skipping: Found excluded tag '{$excludeTag}'" );
 					continue 2;
 				}
 			}
@@ -183,7 +198,8 @@ class Flickr
 		$excludedTagsString = empty( $excludeTags ) ? '' : ',-' . implode( ',-', $excludeTags );
 		$tagsString = "{$includedTagsString}{$excludedTagsString}";
 
-		$request->addParameter( 'license', 1 );			// Creative Commons: Attribution-NonCommercial-ShareAlike License
+		$request->addParameter( 'license', 1 );				// Creative Commons: Attribution-NonCommercial-ShareAlike License
+		$request->addParameter( 'content_type', 1 );		// Photos only
 		$request->addParameter( 'media', 'photos' );
 		$request->addParameter( 'method', 'flickr.photos.search' );
 		$request->addParameter( 'page', $page );
@@ -191,7 +207,8 @@ class Flickr
 		$request->addParameter( 'safe_search', 1 );
 		$request->addParameter( 'sort', 'interestingness-desc' );
 		$request->addParameter( 'tags', $tagsString );
-		$request->addParameter( 'tag_mode', 'all' );	// Uses 'AND' combination
+		$request->addParameter( 'tag_mode', 'all' );		// Uses 'AND' combination
+		$request->addParameter( 'extras', 'machine_tags' );
 
 		$this->output->log( "Flickr: Searching for '{$includedTagsString}', page {$page}" );
 
