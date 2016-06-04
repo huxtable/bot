@@ -40,6 +40,23 @@ class Bot
 	}
 
 	/**
+	 * @param	string		$name
+	 * @param	boolean		$required
+	 * @return	string
+	 */
+	static public function getEnvironmentVariable( $name, $required=false )
+	{
+		$value = getenv( $name );
+
+		if( $value === false && $required )
+		{
+			throw new \Exception( "Missing environment variable '{$name}'" );
+		}
+
+		return $value;
+	}
+
+	/**
 	 * @return	Bot\Flickr\Flickr
 	 */
 	public function getFlickrObject()
@@ -49,15 +66,7 @@ class Bot
 			return $this->flickr;
 		}
 
-		$varName = "{$this->prefix}_FLICKR";
-		$flickrToken = getenv( $varName );
-
-		if( $flickrToken === false )
-		{
-			throw new \Exception( "Missing environment variable '{$varName}'" );
-		}
-
-		$this->flickr = new Flickr\Flickr( $flickrToken );
+		$flickrToken = self::getEnvironmentVariable( "{$this->prefix}_FLICKR" );
 		$this->flickr = new Flickr\Flickr( $flickrToken, $this->history );
 
 		return $this->flickr;
@@ -73,8 +82,8 @@ class Bot
 			return $this->twitter;
 		}
 
-		$envTwitter = getenv( "{$this->prefix}_TWITTER" );
-		$credentialsPieces = explode( ',', $envTwitter );
+		$twitterTokens = self::getEnvironmentVariable( "{$this->prefix}_TWITTER" );
+		$credentialsPieces = explode( ',', $twitterTokens );
 
 		if( count( $credentialsPieces ) != 4 )
 		{
