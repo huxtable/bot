@@ -177,6 +177,18 @@ class Flickr
 				continue;
 			}
 
+			/*
+			 * Skip photos with no camera defined
+			 */
+			if( $photo->getCamera() == '' )
+			{
+				$this->history->addDomainEntry( 'photo_skipped', $photo->getId() );
+				$this->output->log( '***** Skipping: No camera defined! *****' );
+				// continue;
+			}
+
+			$this->output->log( "Camera: " . $photo->getCamera() );
+			$this->output->log( "Flickr: {$favoritesCount} favorites" );
 			break;
 		}
 		while( true );
