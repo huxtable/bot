@@ -8,7 +8,7 @@ namespace Huxtable\Bot;
 class Bot
 {
 	/**
-	 * @var	Bot\Flickr\Flickr
+	 * @var	Huxtable\Bot\Flickr\Flickr
 	 */
 	protected $flickr;
 
@@ -18,25 +18,33 @@ class Bot
 	protected $name;
 
 	/**
+	 * @var	Huxtable\Bot\Output
+	 */
+	protected $output;
+
+	/**
 	 * @var	string
 	 */
 	protected $prefix;
 
 	/**
-	 * @var	Bot\Twitter\Twitter
+	 * @var	Huxtable\Bot\Twitter\Twitter
 	 */
 	protected $twitter;
 
 	/**
-	 * @param	string	$name		Bot name
-	 * @param	string	$prefix		Bot prefix (ex., for environment variables)
+	 * @param	string					$name			Bot name
+	 * @param	string					$prefix			Bot prefix (ex., for environment variables)
+	 * @param	Huxtable\Bot\History	$history
+	 * @param	Huxtable\Bot\Output		$output
 	 * @return	void
 	 */
-	public function __construct( $name, $prefix, History $history )
+	public function __construct( $name, $prefix, History $history, Output $output )
 	{
 		$this->name = $name;
 		$this->prefix = $prefix;
 		$this->history = $history;
+		$this->output = $output;
 	}
 
 	/**
@@ -44,7 +52,7 @@ class Bot
 	 * @param	boolean		$required
 	 * @return	string
 	 */
-	static public function getEnvironmentVariable( $name, $required=false )
+	static public function getEnvironmentVariable( $name, $required=true )
 	{
 		$value = getenv( $name );
 
@@ -67,7 +75,7 @@ class Bot
 		}
 
 		$flickrToken = self::getEnvironmentVariable( "{$this->prefix}_FLICKR" );
-		$this->flickr = new Flickr\Flickr( $flickrToken, $this->history );
+		$this->flickr = new Flickr\Flickr( $flickrToken, $this->history, $this->output );
 
 		return $this->flickr;
 	}

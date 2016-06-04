@@ -5,10 +5,16 @@
  */
 namespace Huxtable\Bot\Flickr;
 
-use \Huxtable\Core\HTTP;
+use Huxtable\Bot;
+use Huxtable\Core\HTTP;
 
 class SearchResults
 {
+	/**
+	 * @var	Huxtable\Bot\Output
+	 */
+	protected $output;
+
 	/**
 	 * Current search results page
 	 *
@@ -43,16 +49,19 @@ class SearchResults
 	protected $total;
 
 	/**
-	 * @param	array	$httpResponseBody
+	 * @param	array					$httpResponseBody
+	 * @param	Huxtable\Bot\Output		$output
 	 * @return	void
 	 */
-	public function __construct( array $httpResponseBody )
+	public function __construct( array $httpResponseBody, Bot\Output $output )
 	{
 		$this->page		= $httpResponseBody['photos']['page'];
 		$this->pages	= $httpResponseBody['photos']['pages'];
 		$this->perpage	= $httpResponseBody['photos']['perpage'];
 		$this->total	= $httpResponseBody['photos']['total'];
 		$this->photos	= $httpResponseBody['photos']['photo'];
+
+		$this->output = $output;
 	}
 
 	/**
@@ -66,7 +75,7 @@ class SearchResults
 		if( count( $this->photos ) > 0 )
 		{
 			$photoInfo = array_shift( $this->photos );
-			$photo = new Photo( $photoInfo, $request );
+			$photo = new Photo( $photoInfo, $request, $this->output );
 
 			return $photo;
 		}

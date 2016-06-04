@@ -16,11 +16,13 @@ class Image
 
 	/**
 	 * @param	Huxtable\Core\File\File		$source
+	 * @param	Huxtable\Bot\Output			$output
 	 * @return	void
 	 */
-	public function __construct( File\File $source )
+	public function __construct( File\File $source, Output $output )
 	{
 		$this->source = $source;
+		$this->output = $output;
 	}
 
 	/**
@@ -31,6 +33,8 @@ class Image
 	 */
 	public function addCaption( $text, $fontSize, $fontPath, $fontColor, $height, $shadowOffset=3 )
 	{
+		$this->output->log( "Image: Adding caption '{$text}'" );
+
 		$dirTemp = $this->source->parent();
 
 		$fileBlack = $dirTemp->child( 'text-black.png' );
@@ -56,6 +60,7 @@ class Image
 	 */
 	public function resize( $height, $width )
 	{
+		$this->output->log( "Image: Resizing to {$height}x{$width}" );
 		exec( "convert {$this->source} -resize '{$height}x{$width}' {$this->source}" );
 	}
 }

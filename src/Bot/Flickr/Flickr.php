@@ -21,19 +21,26 @@ class Flickr
 	protected $history;
 
 	/**
+	 * @var	Huxtable\Bot\Output
+	 */
+	protected $output;
+
+	/**
 	 * @var	Huxtable\Core\HTTP\Request
 	 */
 	protected $request;
 
 	/**
-	 * @param	string			$apiKey
-	 * @param	Bot\History		$history
+	 * @param	string					$apiKey
+	 * @param	Huxtable\Bot\History	$history
+	 * @param	Huxtable\Bot\Output		$history
 	 * @return	void
 	 */
-	public function __construct( $apiKey, Bot\History $history )
+	public function __construct( $apiKey, Bot\History $history, Bot\Output $output )
 	{
 		$this->apiKey = $apiKey;
 		$this->history = $history;
+		$this->output = $output;
 	}
 
 	/**
@@ -51,6 +58,8 @@ class Flickr
 
 		$searchPage = 1;
 		$searchResults = $this->searchPhotosByTags( $includeTags, $excludeTagsQuery, $searchPage );
+
+		$this->output->log( "Flickr: Search returned {$searchResults->getTotal()} results" );
 
 		$request = $this->getFlickrRequest();
 
@@ -80,6 +89,7 @@ class Flickr
 			 */
 			if( $this->history->domainEntryExists( 'photo_id', $photo->getId() ) )
 			{
+				$this->output->log( 'Flickr: Photo already in history' );
 				continue;
 			}
 
@@ -88,6 +98,7 @@ class Flickr
 			 */
 			if( $this->history->domainEntryExists( 'owner_id', $photo->getOwnerId() ) )
 			{
+				$this->output->log( 'Flickr: Owner is muted' );
 				continue;
 			}
 
@@ -96,6 +107,7 @@ class Flickr
 			 */
 			if( $photo->hasPeople() )
 			{
+				$this->output->log( 'Flickr: Photo has people' );
 				continue;
 			}
 
@@ -104,6 +116,7 @@ class Flickr
 			 */
 			if( !$photo->isLandscape() )
 			{
+				$this->output->log( 'Flickr: Photo is portrait' );
 				continue;
 			}
 
@@ -112,6 +125,7 @@ class Flickr
 			 */
 			if( $photo->isPanorama() )
 			{
+				$this->output->log( 'Flickr: Photo is panorama' );
 				continue;
 			}
 
@@ -120,8 +134,9 @@ class Flickr
 			/*
 			 * Skip photos with too many tags`
 			 */
-			if( count( $photoTags ) > 35 )
+			if( ($tagCount = count( $photoTags )) > 60 )
 			{
+				$this->output->log( "Flickr: Too many tags ($tagCount)" );
 				continue;
 			}
 
@@ -132,9 +147,12 @@ class Flickr
 			{
 				if( in_array( $excludeTag, $photoTags ) )
 				{
-					continue;
+					$this->output->log( "Flickr: Found excluded tag '{$excludeTag}'" );
+					continue 2;
 				}
 			}
+
+			$this->output->log( sprintf( 'Photo: %s favorites', $photo->getFavorites() ) );
 			break;
 		}
 		while( true );
@@ -175,9 +193,11 @@ class Flickr
 		$request->addParameter( 'tags', $tagsString );
 		$request->addParameter( 'tag_mode', 'all' );	// Uses 'AND' combination
 
+		$this->output->log( "Flickr: Searching for '{$includedTagsString}', page {$page}" );
+
 		$httpResponse = $http->get( $request );
 		$httpResponseBody = unserialize( $httpResponse->getBody() );
-		$searchResults = new SearchResults( $httpResponseBody );
+		$searchResults = new SearchResults( $httpResponseBody, $this->output );
 
 		return $searchResults;
 	}

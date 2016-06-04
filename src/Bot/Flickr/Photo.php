@@ -27,6 +27,11 @@ class Photo
 	protected $id;
 
 	/**
+	 * @var	Huxtable\Bot\Output
+	 */
+	protected $output;
+
+	/**
 	 * @var	string
 	 */
 	protected $ownerId;
@@ -69,15 +74,17 @@ class Photo
 	/**
 	 * @param	array						$photoInfo
 	 * @param	Huxtable\Core\HTTP\Request	$request
+	 * @param	Huxtable\Bot\Output			$output
 	 * @return	void
 	 */
-	public function __construct( array $photoInfo, HTTP\Request $request )
+	public function __construct( array $photoInfo, HTTP\Request $request, Bot\Output $output )
 	{
 		$this->id = $photoInfo['id'];
 		$this->ownerId = $photoInfo['owner'];
 		$this->secret = $photoInfo['secret'];
 
 		$this->request = $request;
+		$this->output = $output;
 	}
 
 	/**
@@ -89,12 +96,12 @@ class Photo
 		$http = new HTTP();
 		$request = new HTTP\Request( $this->source );
 
-		echo 'Downloading...';
+		$this->output->log( 'Flickr: Downloading photo...' );
 		$httpResponse = $http->get( $request );
 		$file->putContents( $httpResponse->getBody() );
-		echo ' done.' . PHP_EOL;
+		$this->output->log( 'Flickr: ...done.' );
 
-		return new Bot\Image( $file );
+		return new Bot\Image( $file, $this->output );
 	}
 
 	/**
