@@ -105,6 +105,27 @@ class Photo
 	}
 
 	/**
+
+	/**
+	 * @return	int
+	 */
+	public function getFavorites()
+	{
+		$http = new HTTP;
+		$request = $this->getRequest();
+
+		$request->addParameter( 'method',	'flickr.photos.getFavorites' );
+		$request->addParameter( 'photo_id',	$this->id );
+		$request->addParameter( 'page',		1 );
+		$request->addParameter( 'per_page',	1 );
+
+		$httpResponse = $http->get( $request );
+		$httpResponseBody = unserialize( $httpResponse->getBody() );
+
+		$photoInfo = $httpResponseBody['photo'];
+		return $photoInfo['total'];
+	}
+
 	 * @return	int
 	 */
 	public function getHeight()

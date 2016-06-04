@@ -167,7 +167,16 @@ class Flickr
 				}
 			}
 
-			$this->output->log( sprintf( 'Photo: %s favorites', $photo->getFavorites() ) );
+			/*
+			 * Skip photos with no favorites
+			 */
+			if( ($favoritesCount = $photo->getFavorites()) < 1 )
+			{
+				$this->history->addDomainEntry( 'photo_skipped', $photo->getId() );
+				$this->output->log( "Skipping: Not enough favorites...? ($favoritesCount)" );
+				continue;
+			}
+
 			break;
 		}
 		while( true );
