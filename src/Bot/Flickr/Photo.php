@@ -87,6 +87,7 @@ class Photo
 		$this->id = $photoInfo['id'];
 		$this->ownerId = $photoInfo['owner'];
 		$this->secret = $photoInfo['secret'];
+		$this->machineTags = $photoInfo['machine_tags'];
 
 		$this->request = $request;
 		$this->output = $output;
@@ -230,6 +231,14 @@ class Photo
 
 		// Experimental
 		$this->hasPeople = $photoInfo['people']['haspeople'] === 1;
+	}
+
+	/**
+	 * @return	string
+	 */
+	public function getMachineTags()
+	{
+		return $this->machineTags;
 	}
 
 	/**
