@@ -90,4 +90,12 @@ class SearchResults
 	{
 		return $this->pages;
 	}
+
+	/**
+	 * @return	int
+	 */
+	public function getTotal()
+	{
+		return $this->total;
+	}
 }
