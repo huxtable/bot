@@ -15,16 +15,12 @@ class Image
 	protected $source;
 
 	/**
-	 * @param	Huxtable\Core\File\File		$fileJPG
+	 * @param	Huxtable\Core\File\File		$source
 	 * @return	void
 	 */
-	public function __construct( File\File $fileJPG )
+	public function __construct( File\File $source )
 	{
-		// Resize and convert the source JPG
-		// $filePNG = $fileJPG->parent()->child( 'source.png' );
-		exec( "convert {$fileJPG} -resize '640x640' {$fileJPG}" );
-
-		$this->source = $fileJPG;
+		$this->source = $source;
 	}
 
 	/**
@@ -56,5 +52,15 @@ class Image
 		exec( "composite -gravity south -compose multiply {$fileShadow} {$this->source} {$this->source}" );
 		exec( "composite -gravity south -compose multiply {$fileBlack} {$this->source} {$this->source}" );
 		exec( "composite -gravity south -compose screen {$fileColor} {$this->source} {$this->source}" );
+	}
+
+	/**
+	 * @param	int		$height
+	 * @param	int		$width
+	 * @return	void
+	 */
+	public function resize( $height, $width )
+	{
+		exec( "convert {$this->source} -resize '{$height}x{$width}' {$this->source}" );
 	}
 }
