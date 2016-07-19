@@ -8,6 +8,11 @@ namespace Huxtable\Bot;
 class Bot
 {
 	/**
+	 * @var	Huxtable\Bot\Corpora
+	 */
+	protected $corpora;
+
+	/**
 	 * @var	Huxtable\Bot\Flickr\Flickr
 	 */
 	protected $flickr;
@@ -37,14 +42,16 @@ class Bot
 	 * @param	string					$prefix			Bot prefix (ex., for environment variables)
 	 * @param	Huxtable\Bot\History	$history
 	 * @param	Huxtable\Bot\Output		$output
+	 * @param	Huxtable\Bot\Corpora	$corpora
 	 * @return	void
 	 */
-	public function __construct( $name, $prefix, History $history, Output $output )
+	public function __construct( $name, $prefix, History $history, Output $output, Corpora $corpora = null )
 	{
 		$this->name = $name;
 		$this->prefix = $prefix;
 		$this->history = $history;
 		$this->output = $output;
+		$this->corpora = $corpora;
 	}
 
 	/**
