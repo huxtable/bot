@@ -5,6 +5,8 @@
  */
 namespace Huxtable\Bot;
 
+use Huxtable\Core\Config;
+
 class Bot
 {
 	/**
@@ -42,15 +44,17 @@ class Bot
 	 * @param	string					$prefix			Bot prefix (ex., for environment variables)
 	 * @param	Huxtable\Bot\History	$history
 	 * @param	Huxtable\Bot\Output		$output
+	 * @param	Huxtable\Core\Config	$config
 	 * @param	Huxtable\Bot\Corpora	$corpora
 	 * @return	void
 	 */
-	public function __construct( $name, $prefix, History $history, Output $output, Corpora $corpora = null )
+	public function __construct( $name, $prefix, History $history, Output $output, Config $config, Corpora $corpora = null )
 	{
 		$this->name = $name;
 		$this->prefix = $prefix;
 		$this->history = $history;
 		$this->output = $output;
+		$this->config = $config;
 		$this->corpora = $corpora;
 	}
 
@@ -81,7 +85,7 @@ class Bot
 			return $this->flickr;
 		}
 
-		$flickrToken = self::getEnvironmentVariable( "{$this->prefix}_FLICKR" );
+		$flickrToken = $this->config->getValue( 'flickr', 'apiKey' );
 		$this->flickr = new Flickr\Flickr( $flickrToken, $this->history, $this->output );
 
 		return $this->flickr;
