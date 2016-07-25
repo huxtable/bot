@@ -284,7 +284,7 @@ class Photo
 		// Find the version whose width is closest to 640
 		foreach( $sizeInfo as $sizeIndex => $info )
 		{
-			if( $info['width'] >= 640 )
+			if( $info['width'] >= 640 && $info['height'] >= 480 )
 			{
 				break;
 			}
@@ -367,6 +367,6 @@ class Photo
 			$this->getSizes();
 		}
 
-		return $this->ratio <= 0.5;
+		return $this->ratio <= 0.65;
 	}
 }
