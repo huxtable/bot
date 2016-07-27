@@ -16,12 +16,14 @@ class Corpora
 	protected $source;
 
 	/**
-	 * @param
+	 * @param	Huxtable\Core\File\Directory	$source
+	 * @param	Huxtable\Bot\History			$history
 	 * @return	void
 	 */
-	public function __construct( File\Directory $source )
+	public function __construct( File\Directory $source, History $history=null )
 	{
 		$this->source = $source;
+		$this->history = $history;
 	}
 
 	/**
@@ -53,15 +55,52 @@ class Corpora
 		$dataSelector = is_null( $selector ) ? $corpusName : $selector;
 		$corpus = $corpusData[$dataSelector];
 
+		$attempts = 0;
 		do
 		{
 			$item = Utils::randomElement( $corpus );
+
 			if( !is_null( $callback ) )
 			{
 				$item = call_user_func( $callback, $item );
 			}
+
+			/*
+			 * Check History
+			 */
+			if( !is_null( $this->history ) )
+			{
+				$historyDomain = "corpus_{$categoryName}_{$corpusName}";
+
+				if( $this->history->domainEntryExists( $historyDomain, $item ) )
+				{
+					$item = false;
+				}
+
+				/*
+				 * Reset corpus
+				 */
+				if( $attempts >= count( $corpus ) )
+				{
+					echo "Resetting {$historyDomain}..." . PHP_EOL;
+					$this->history->resetDomain( $historyDomain );
+					$attempts = 0;
+				}
+				else
+				{
+					$attempts++;
+				}
+			}
 		}
 		while( $item === false );
+
+		/*
+		 * Add to History
+		 */
+		if( !is_null( $this->history ) )
+		{
+			$this->history->addDomainEntry( $historyDomain, $item );
+		}
 
 		return $item;
 	}
