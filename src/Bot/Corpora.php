@@ -82,7 +82,6 @@ class Corpora
 				 */
 				if( $attempts >= count( $corpus ) )
 				{
-					echo "Resetting {$historyDomain}..." . PHP_EOL;
 					$this->history->resetDomain( $historyDomain );
 					$attempts = 0;
 				}
