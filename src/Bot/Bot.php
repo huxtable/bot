@@ -31,11 +31,6 @@ class Bot
 	protected $name;
 
 	/**
-	 * @var	Huxtable\Bot\Output
-	 */
-	protected $output;
-
-	/**
 	 * @var	Huxtable\Bot\Twitter\Twitter
 	 */
 	protected $twitter;
@@ -43,15 +38,13 @@ class Bot
 	/**
 	 * @param	string					$name			Bot name
 	 * @param	Huxtable\Bot\History	$history
-	 * @param	Huxtable\Bot\Output		$output
 	 * @param	Huxtable\Core\Config	$config
 	 * @return	void
 	 */
-	public function __construct( $name, History $history, Output $output, Config $config )
+	public function __construct( $name, History $history, Config $config )
 	{
 		$this->name = $name;
 		$this->history = $history;
-		$this->output = $output;
 		$this->config = $config;
 	}
 
@@ -74,7 +67,7 @@ class Bot
 		}
 
 		$flickrToken = $this->config->getValue( 'flickr', 'apiKey' );
-		$this->flickr = new Flickr\Flickr( $flickrToken, $this->history, $this->output );
+		$this->flickr = new Flickr\Flickr( $flickrToken, $this->history );
 
 		return $this->flickr;
 	}

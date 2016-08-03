@@ -15,21 +15,15 @@ class History
 	public $items = [];
 
 	/**
-	 * @var	Huxtable\Bot\Output
-	 */
-	protected $output;
-
-	/**
 	 * @var	Huxtable\Core\File\File
 	 */
 	protected $source;
 
 	/**
 	 * @param	Huxtable\Core\File\File		$file
-	 * @param	Huxtable\Bot\Output			$output
 	 * @return	void
 	 */
-	public function __construct( File\File $source, Output $output )
+	public function __construct( File\File $source )
 	{
 		$this->source = $source;
 		if( $source->exists() )
@@ -42,8 +36,6 @@ class History
 				$this->items = $data['items'];
 			}
 		}
-
-		$this->output = $output;
 	}
 
 	/**
