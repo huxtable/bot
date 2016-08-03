@@ -6,6 +6,7 @@
 namespace Huxtable\Bot;
 
 use Huxtable\Core\Config;
+use Huxtable\Core\File;
 
 class Bot
 {
@@ -13,6 +14,11 @@ class Bot
 	 * @var	Huxtable\Bot\Corpora
 	 */
 	protected $corpora;
+
+	/**
+	 * @var	Huxtable\Core\File\Directory
+	 */
+	protected $dirData;
 
 	/**
 	 * @var	Huxtable\Bot\Flickr\Flickr
@@ -30,49 +36,31 @@ class Bot
 	protected $output;
 
 	/**
-	 * @var	string
-	 */
-	protected $prefix;
-
-	/**
 	 * @var	Huxtable\Bot\Twitter\Twitter
 	 */
 	protected $twitter;
 
 	/**
 	 * @param	string					$name			Bot name
-	 * @param	string					$prefix			Bot prefix (ex., for environment variables)
 	 * @param	Huxtable\Bot\History	$history
 	 * @param	Huxtable\Bot\Output		$output
 	 * @param	Huxtable\Core\Config	$config
-	 * @param	Huxtable\Bot\Corpora	$corpora
 	 * @return	void
 	 */
-	public function __construct( $name, $prefix, History $history, Output $output, Config $config, Corpora $corpora = null )
+	public function __construct( $name, History $history, Output $output, Config $config )
 	{
 		$this->name = $name;
-		$this->prefix = $prefix;
 		$this->history = $history;
 		$this->output = $output;
 		$this->config = $config;
-		$this->corpora = $corpora;
 	}
 
 	/**
-	 * @param	string		$name
-	 * @param	boolean		$required
-	 * @return	string
+	 * @return	Huxtable\Core\File\Directory
 	 */
-	static public function getEnvironmentVariable( $name, $required=true )
+	public function getDataDirectory()
 	{
-		$value = getenv( $name );
-
-		if( $value === false && $required )
-		{
-			throw new \Exception( "Missing environment variable '{$name}'" );
-		}
-
-		return $value;
+		return $this->dirData;
 	}
 
 	/**
@@ -96,25 +84,15 @@ class Bot
 	 */
 	protected function getTwitterObject()
 	{
-		if( $this->twitter instanceof Twitter )
+		if( !($this->twitter instanceof Twitter) )
 		{
-			return $this->twitter;
+			$credentials['consumerKey'] 	= $this->config->getValue( 'twitter', 'consumerKey' );
+			$credentials['consumerSecret']	= $this->config->getValue( 'twitter', 'consumerSecret' );
+			$credentials['token'] 			= $this->config->getValue( 'twitter', 'token' );
+			$credentials['tokenSecret'] 	= $this->config->getValue( 'twitter', 'tokenSecret' );
+
+			$this->twitter = new Twitter( $credentials );
 		}
-
-		$twitterTokens = self::getEnvironmentVariable( "{$this->prefix}_TWITTER" );
-		$credentialsPieces = explode( ',', $twitterTokens );
-
-		if( count( $credentialsPieces ) != 4 )
-		{
-			throw new \Exception( "Missing environment variable '{$this->prefix}_TWITTER'" );
-		}
-
-		$credentials['consumerKey'] 	= $credentialsPieces[0];
-		$credentials['consumerSecret']	= $credentialsPieces[1];
-		$credentials['token'] 			= $credentialsPieces[2];
-		$credentials['tokenSecret'] 	= $credentialsPieces[3];
-
-		$this->twitter = new Twitter( $credentials );
 
 		return $this->twitter;
 	}
@@ -127,5 +105,14 @@ class Bot
 	{
 		$twitter = $this->getTwitterObject();
 		$twitter->postMessage( $message );
+	}
+
+	/**
+	 * @param	Huxtable\Core\File\Directory	$dirData
+	 * @return	void
+	 */
+	public function setDataDirectory( File\Directory $dirData )
+	{
+		$this->dirData = $dirData;
 	}
 }
