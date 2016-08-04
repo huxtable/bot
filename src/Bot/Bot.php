@@ -79,12 +79,8 @@ class Bot
 	{
 		if( !($this->twitter instanceof Twitter) )
 		{
-			$credentials['consumerKey'] 	= $this->config->getValue( 'twitter', 'consumerKey' );
-			$credentials['consumerSecret']	= $this->config->getValue( 'twitter', 'consumerSecret' );
-			$credentials['token'] 			= $this->config->getValue( 'twitter', 'token' );
-			$credentials['tokenSecret'] 	= $this->config->getValue( 'twitter', 'tokenSecret' );
-
-			$this->twitter = new Twitter( $credentials );
+			$credentials = $this->config->getDomain( 'twitter' );
+			$this->twitter = new Twitter\Twitter( $credentials );
 		}
 
 		return $this->twitter;
