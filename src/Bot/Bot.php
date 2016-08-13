@@ -97,6 +97,15 @@ class Bot
 	}
 
 	/**
+	 * @param
+	 * @return	void
+	 */
+	public function registerCorpora( Corpora $corpora )
+	{
+		$this->corpora = $corpora;
+	}
+
+	/**
 	 * @param	Huxtable\Core\File\Directory	$dirData
 	 * @return	void
 	 */
