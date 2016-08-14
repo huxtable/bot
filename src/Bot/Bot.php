@@ -26,6 +26,11 @@ class Bot
 	protected $dirData;
 
 	/**
+	 * @var	Huxtable\Core\File\Directory
+	 */
+	protected $dirTemp;
+
+	/**
 	 * @var	Huxtable\Bot\Flickr\Flickr
 	 */
 	protected $flickr;
@@ -49,6 +54,14 @@ class Bot
 	{
 		$this->name = $name;
 		$this->dirData = $dirData;
+
+		/* Temp Directory */
+		$this->dirTemp = $dirData->childDir( 'tmp' );
+
+		if( !$this->dirTemp->exists() )
+		{
+			$this->dirTemp->create();
+		}
 
 		/* History */
 		$fileHistory = $this->dirData->child( 'history.json' );
@@ -97,6 +110,14 @@ class Bot
 	public function getHistoryObject()
 	{
 		return $this->history;
+	}
+
+	/**
+	 * @return	Huxtable\Core\File\Directory
+	 */
+	public function getTempDirectory()
+	{
+		return $this->dirTemp;
 	}
 
 	/**
