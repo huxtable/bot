@@ -11,6 +11,11 @@ use Huxtable\Core\File;
 class Bot
 {
 	/**
+	 * @var	Huxtable\Core\Config
+	 */
+	protected $config;
+
+	/**
 	 * @var	Huxtable\Bot\Corpora
 	 */
 	protected $corpora;
@@ -36,16 +41,30 @@ class Bot
 	protected $twitter;
 
 	/**
-	 * @param	string					$name			Bot name
-	 * @param	Huxtable\Bot\History	$history
-	 * @param	Huxtable\Core\Config	$config
+	 * @param	string							$name			Bot name
+	 * @param	Huxtable\Core\File\Directory	$dirData		ex., /var/opt/<bot>
 	 * @return	void
 	 */
-	public function __construct( $name, History $history, Config $config )
+	public function __construct( $name, File\Directory $dirData )
 	{
 		$this->name = $name;
-		$this->history = $history;
-		$this->config = $config;
+		$this->dirData = $dirData;
+
+		/* History */
+		$fileHistory = $this->dirData->child( 'history.json' );
+		$this->history = new History( $fileHistory );
+
+		/* Config */
+		$fileConfig = $this->dirData->child( 'config.json' );
+		$this->config = new Config( $fileConfig );
+	}
+
+	/**
+	 * @return	Huxtable\Core\Config
+	 */
+	public function getConfigObject()
+	{
+		return $this->config;
 	}
 
 	/**
@@ -70,6 +89,14 @@ class Bot
 		$this->flickr = new Flickr\Flickr( $flickrToken, $this->history );
 
 		return $this->flickr;
+	}
+
+	/**
+	 * @return	Huxtable\Bot\History
+	 */
+	public function getHistoryObject()
+	{
+		return $this->history;
 	}
 
 	/**
@@ -103,14 +130,5 @@ class Bot
 	public function registerCorpora( Corpora $corpora )
 	{
 		$this->corpora = $corpora;
-	}
-
-	/**
-	 * @param	Huxtable\Core\File\Directory	$dirData
-	 * @return	void
-	 */
-	public function setDataDirectory( File\Directory $dirData )
-	{
-		$this->dirData = $dirData;
 	}
 }
