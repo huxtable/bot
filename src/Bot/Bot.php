@@ -135,13 +135,13 @@ class Bot
 	}
 
 	/**
-	 * @param	string	$message
+	 * @param	Huxtable\Bot\Twitter\Tweet	$tweet
 	 * @return	void
 	 */
-	public function postMessageToTwitter( $message )
+	public function postTweetToTwitter( Twitter\Tweet $tweet )
 	{
 		$twitter = $this->getTwitterObject();
-		$twitter->postMessage( $message );
+		$twitter->postTweet( $tweet );
 	}
 
 	/**
