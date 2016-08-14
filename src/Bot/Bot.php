@@ -41,6 +41,11 @@ class Bot
 	protected $name;
 
 	/**
+	 * @var	Huxtable\Bot\Output
+	 */
+	protected $output;
+
+	/**
 	 * @var	Huxtable\Bot\Twitter\Twitter
 	 */
 	protected $twitter;
@@ -54,6 +59,9 @@ class Bot
 	{
 		$this->name = $name;
 		$this->dirData = $dirData;
+
+		/* Output */
+		$this->output = new Output( false );
 
 		/* Temp Directory */
 		$this->dirTemp = $dirData->childDir( 'tmp' );
@@ -99,7 +107,7 @@ class Bot
 		}
 
 		$flickrToken = $this->config->getValue( 'flickr', 'apiKey' );
-		$this->flickr = new Flickr\Flickr( $flickrToken, $this->history );
+		$this->flickr = new Flickr\Flickr( $flickrToken, $this->history, $this->output );
 
 		return $this->flickr;
 	}
