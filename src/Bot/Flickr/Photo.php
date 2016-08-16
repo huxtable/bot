@@ -367,6 +367,6 @@ class Photo
 			$this->getSizes();
 		}
 
-		return $this->ratio <= 0.65;
+		return $this->ratio <= 0.75;
 	}
 }
