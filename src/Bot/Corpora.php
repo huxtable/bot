@@ -27,10 +27,12 @@ class Corpora
 	}
 
 	/**
-	 * @param
-	 * @return	void
+	 * @param	string	$categoryName
+	 * @param	string	$corpusName
+	 * @param	string	$selector
+	 * @return	mixed
 	 */
-	public function getItem( $categoryName, $corpusName, \Closure $callback = null, $selector = null )
+	public function getItem( $categoryName, $corpusName, $selector = null )
 	{
 		$dirCategory = $this->source->childDir( $categoryName );
 
@@ -51,56 +53,39 @@ class Corpora
 			throw new \Exception( "Undefined corpus '{$corpusName}'" );
 		}
 
+		$historyDomain = "corpus_{$categoryName}_{$corpusName}";
+
 		$corpusData = json_decode( $corpusFile->getContents(), true );
 		$dataSelector = is_null( $selector ) ? $corpusName : $selector;
-		$corpus = $corpusData[$dataSelector];
 
-		$attempts = 0;
-		do
-		{
-			$item = Utils::randomElement( $corpus );
+		$corpusItems = $corpusData[$dataSelector];
 
-			if( !is_null( $callback ) )
-			{
-				$item = call_user_func( $callback, $item );
-			}
-
-			/*
-			 * Check History
-			 */
-			if( !is_null( $this->history ) )
-			{
-				$historyDomain = "corpus_{$categoryName}_{$corpusName}";
-
-				if( $this->history->domainEntryExists( $historyDomain, $item ) )
-				{
-					$item = false;
-				}
-
-				/*
-				 * Reset corpus
-				 */
-				if( $attempts >= count( $corpus ) )
-				{
-					$this->history->resetDomain( $historyDomain );
-					$attempts = 0;
-				}
-				else
-				{
-					$attempts++;
-				}
-			}
-		}
-		while( $item === false );
-
-		/*
-		 * Add to History
-		 */
 		if( !is_null( $this->history ) )
 		{
-			$this->history->addDomainEntry( $historyDomain, $item );
+			$corpusItemsUnused = [];
+
+			foreach( $corpusItems as $corpusItem )
+			{
+				if( !$this->history->domainEntryExists( $historyDomain, $corpusItem ) )
+				{
+					$corpusItemsUnused[] = $corpusItem;
+				}
+			}
+
+			if( count( $corpusItemsUnused ) == 0 )
+			{
+				$this->history->resetDomain( $historyDomain );
+				$corpusItemsUnused = $corpusItems;
+			}
+
+			$corpusItem = Utils::randomElement( $corpusItemsUnused );
+			$this->history->addDomainEntry( $historyDomain, $corpusItem );
+		}
+		else
+		{
+			$corpusItem = Utils::randomElement( $corpusItems );
 		}
 
-		return $item;
+		return $corpusItem;
 	}
 }
