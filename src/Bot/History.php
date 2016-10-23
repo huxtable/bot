@@ -46,7 +46,6 @@ class History
 	public function addDomainEntry( $domain, $value )
 	{
 		$this->items[$domain][] = $value;
-		$this->write();
 	}
 
 	/**
@@ -73,7 +72,6 @@ class History
 		if( isset( $this->items[$domain] ) )
 		{
 			$this->items[$domain] = [];
-			$this->write();
 		}
 	}
 

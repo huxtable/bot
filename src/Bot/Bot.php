@@ -160,4 +160,12 @@ class Bot
 	{
 		$this->corpora = $corpora;
 	}
+
+	/**
+	 * @return	void
+	 */
+	public function writeHistory()
+	{
+		$this->history->write();
+	}
 }
