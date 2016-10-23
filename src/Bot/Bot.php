@@ -143,6 +143,22 @@ class Bot
 	}
 
 	/**
+	 * @param
+	 * @return	void
+	 */
+	public function postMessageToSlack( Slack\Message $message )
+	{
+		$webhookURL = $this->config->getValue( 'slack', 'webhook' );
+		$slack = new Slack\Slack();
+
+		/* Configure Message */
+		$message->setUsername( $this->config->getValue( 'slack', 'name' ) );
+		$message->setEmoji( $this->config->getValue( 'slack', 'emoji' ) );
+
+		$response = $slack->postMessage( $webhookURL, $message );
+	}
+
+	/**
 	 * @param	Huxtable\Bot\Twitter\Tweet	$tweet
 	 * @return	void
 	 */
