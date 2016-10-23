@@ -165,7 +165,13 @@ class Bot
 	public function postTweetToTwitter( Twitter\Tweet $tweet )
 	{
 		$twitter = $this->getTwitterObject();
-		$twitter->postTweet( $tweet );
+		$response = $twitter->postTweet( $tweet );
+
+		if( $response['httpCode'] != 200 )
+		{
+			$responseError = $response['body']['errors'][0];
+			throw new \Exception( $responseError->message, $responseError->code );
+		}
 	}
 
 	/**
