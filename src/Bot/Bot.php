@@ -31,11 +31,6 @@ class Bot
 	protected $dirTemp;
 
 	/**
-	 * @var	Huxtable\Bot\Flickr\Flickr
-	 */
-	protected $flickr;
-
-	/**
 	 * @var	string
 	 */
 	protected $name;
@@ -71,10 +66,6 @@ class Bot
 			$this->dirTemp->create();
 		}
 
-		/* History */
-		$fileHistory = $this->dirData->child( 'history.json' );
-		$this->history = new History( $fileHistory );
-
 		/* Config */
 		$fileConfig = $this->dirData->child( 'config.json' );
 		$this->config = new Config( $fileConfig );
@@ -94,30 +85,6 @@ class Bot
 	public function getDataDirectory()
 	{
 		return $this->dirData;
-	}
-
-	/**
-	 * @return	Bot\Flickr\Flickr
-	 */
-	public function getFlickrObject()
-	{
-		if( $this->flickr instanceof Flickr\Flickr )
-		{
-			return $this->flickr;
-		}
-
-		$flickrToken = $this->config->getValue( 'flickr', 'apiKey' );
-		$this->flickr = new Flickr\Flickr( $flickrToken, $this->history, $this->output );
-
-		return $this->flickr;
-	}
-
-	/**
-	 * @return	Huxtable\Bot\History
-	 */
-	public function getHistoryObject()
-	{
-		return $this->history;
 	}
 
 	/**
@@ -181,13 +148,5 @@ class Bot
 	public function registerCorpora( Corpora $corpora )
 	{
 		$this->corpora = $corpora;
-	}
-
-	/**
-	 * @return	void
-	 */
-	public function writeHistory()
-	{
-		$this->history->write();
 	}
 }

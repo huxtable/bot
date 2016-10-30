@@ -3,7 +3,7 @@
 /*
  * This file is part of Huxtable\Bot
  */
-namespace Huxtable\Bot;
+namespace Huxtable\Bot\History;
 
 use Huxtable\Core\File;
 
