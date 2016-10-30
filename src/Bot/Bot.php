@@ -11,11 +11,6 @@ use Huxtable\Core\File;
 class Bot
 {
 	/**
-	 * @var	Huxtable\Core\Config
-	 */
-	protected $config;
-
-	/**
 	 * @var	Huxtable\Bot\Corpora
 	 */
 	protected $corpora;
@@ -60,18 +55,6 @@ class Bot
 		{
 			$this->dirTemp->create();
 		}
-
-		/* Config */
-		$fileConfig = $this->dirData->child( 'config.json' );
-		$this->config = new Config( $fileConfig );
-	}
-
-	/**
-	 * @return	Huxtable\Core\Config
-	 */
-	public function getConfigObject()
-	{
-		return $this->config;
 	}
 
 	/**
