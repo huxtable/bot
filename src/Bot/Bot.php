@@ -11,11 +11,6 @@ use Huxtable\Core\File;
 class Bot
 {
 	/**
-	 * @var	Huxtable\Bot\Corpora
-	 */
-	protected $corpora;
-
-	/**
 	 * @var	Huxtable\Core\File\Directory
 	 */
 	protected $dirData;
@@ -31,11 +26,6 @@ class Bot
 	protected $name;
 
 	/**
-	 * @var	Huxtable\Bot\Output
-	 */
-	protected $output;
-
-	/**
 	 * @param	string							$name			Bot name
 	 * @param	Huxtable\Core\File\Directory	$dirData		ex., /var/opt/<bot>
 	 * @return	void
@@ -44,9 +34,6 @@ class Bot
 	{
 		$this->name = $name;
 		$this->dirData = $dirData;
-
-		/* Output */
-		$this->output = new Output( false );
 
 		/* Temp Directory */
 		$this->dirTemp = $dirData->childDir( 'tmp' );
