@@ -75,13 +75,4 @@ class Bot
 
 		$response = $slack->postMessage( $webhookURL, $message );
 	}
-
-	/**
-	 * @param
-	 * @return	void
-	 */
-	public function registerCorpora( Corpora $corpora )
-	{
-		$this->corpora = $corpora;
-	}
 }

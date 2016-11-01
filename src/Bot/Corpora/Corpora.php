@@ -3,8 +3,9 @@
 /*
  * This file is part of Huxtable\Bot
  */
-namespace Huxtable\Bot;
+namespace Huxtable\Bot\Corpora;
 
+use Huxtable\Bot\History;
 use Huxtable\Core\File;
 use Huxtable\Core\Utils;
 
@@ -17,10 +18,10 @@ class Corpora
 
 	/**
 	 * @param	Huxtable\Core\File\Directory	$source
-	 * @param	Huxtable\Bot\History			$history
+	 * @param	Huxtable\Bot\History\History	$history
 	 * @return	void
 	 */
-	public function __construct( File\Directory $source, History $history=null )
+	public function __construct( File\Directory $source, History\History $history=null )
 	{
 		$this->source = $source;
 		$this->history = $history;
