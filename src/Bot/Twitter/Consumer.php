@@ -40,7 +40,7 @@ trait Consumer
 	 * @param	Huxtable\Bot\Twitter\Tweet	$tweet
 	 * @return	void
 	 */
-	public function postTweetToTwitter( Twitter\Tweet $tweet )
+	public function postTweetToTwitter( Tweet $tweet )
 	{
 		$twitter = $this->getTwitterObject();
 		$response = $twitter->postTweet( $tweet );
