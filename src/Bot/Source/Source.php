@@ -132,6 +132,60 @@ class Source implements \JsonSerializable
 	}
 
 	/**
+	 * @param	string	$currentWord
+	 * @return	string
+	 */
+	public function getNextWord( $currentWord )
+	{
+		if( strlen( $currentWord ) == 0 )
+		{
+			return false;
+		}
+
+		$contents = $this->getContents();
+
+		$pattern = "/{$currentWord}\s(\w*)/m";
+		preg_match_all( $pattern, $contents, $matches );
+
+		if( !isset( $matches[1] ) || count( $matches[1] ) == 0 )
+		{
+			return false;
+		}
+
+		$attempts = 0;
+		do
+		{
+			$shouldUseWord = true;
+			$nextWord = Utils::randomElement( $matches[1] );
+
+			foreach( $this->exclusions as $exclusion )
+			{
+				if( substr_count( $nextWord, $exclusion ) > 0 )
+				{
+					$shouldUseWord = false;
+					break;
+				}
+			}
+
+			if( strlen( $nextWord ) == 0 )
+			{
+				$shouldUseWord = false;
+			}
+
+			if( $attempts >= 10 )
+			{
+				$nextWord = false;
+				break;
+			}
+
+			$attempts++;
+		}
+		while( !$shouldUseWord );
+
+		return $nextWord;
+	}
+
+	/**
 	 * @param	int		$paragraphCount
 	 * @return	array
 	 */
