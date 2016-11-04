@@ -7,6 +7,7 @@ namespace Huxtable\Bot\Source;
 
 use Huxtable\Core\File;
 use Huxtable\Core\HTTP;
+use Huxtable\Core\Utils;
 
 trait Consumer
 {
@@ -184,13 +185,14 @@ trait Consumer
 	public function getRandomSource()
 	{
 		$historyDomain = 'source_ids';
+		$history = $this->getHistoryObject();
 
 		$sources = $this->getEnabledSources();
 		$sourcesUnused = [];
 
 		foreach( $sources as $source )
 		{
-			if( !$this->history->domainEntryExists( $historyDomain, $source->getId() ) )
+			if( !$history->domainEntryExists( $historyDomain, $source->getId() ) )
 			{
 				$sourcesUnused[] = $source;
 			}
@@ -198,12 +200,12 @@ trait Consumer
 
 		if( count( $sourcesUnused ) == 0 )
 		{
-			$this->history->resetDomain( $historyDomain );
+			$history->resetDomain( $historyDomain );
 			$sourcesUnused = $sources;
 		}
 
 		$source = Utils::randomElement( $sourcesUnused );
-		$this->history->addDomainEntry( $historyDomain, $source->getId() );
+		$history->addDomainEntry( $historyDomain, $source->getId() );
 
 		return $source;
 	}
