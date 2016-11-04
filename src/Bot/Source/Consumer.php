@@ -373,6 +373,14 @@ trait Consumer
 	}
 
 	/**
+	 * @param	array	$exclusions
+	 */
+	public function setExclusions( array $exclusions )
+	{
+		$this->exclusions = $exclusions;
+	}
+
+	/**
 	 * @return	void
 	 */
 	public function writeSources()
